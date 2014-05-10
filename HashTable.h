@@ -26,7 +26,7 @@ Node *create_node(KEY_TYPE key, VALUE_TYPE value);
 
 int Hash (KEY_TYPE key);
 
-HashTable *creat_table();
+HashTable *create_table();
 
 void encapacity(HashTable *hash);
 
@@ -34,7 +34,7 @@ void table_set(HashTable *hash, KEY_TYPE key, VALUE_TYPE value);
 
 VALUE_TYPE table_get(HashTable *hash, KEY_TYPE key);
 
-//void table_del(Hashtable *hash, KEY_TYPE *key);
+void table_del(HashTable *hash, KEY_TYPE key);
 
 void free_table(HashTable *hash);
 

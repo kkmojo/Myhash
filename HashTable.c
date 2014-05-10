@@ -29,13 +29,18 @@ HashTable *create_table()
 	int i = 0;
 
 	HashTable *hash = (HashTable*)malloc(sizeof(HashTable));
+	if (hash == NULL){
+		return NULL;
+
+	}
 	hash->entries = (Node**)malloc(sizeof(Node*)*INIT_CAPACITY);
+
 	hash->size = 0;
 	hash->capacity = INIT_CAPACITY;
 
 	for(i = 0; i<INIT_CAPACITY; i++)
 	{
-		hash->entries[i] = 0;
+		hash->entries[i] = NULL;
 	}
 
 	return hash;
@@ -49,14 +54,17 @@ void encapacity(HashTable *hash)
 	int i = 0;
 	Node **new_entre = (Node**)malloc(sizeof(Node*) * new_capacity);
 
+
 	for(i = 0; i < old_capacity; i++)
 	{
 		new_entre[i] = hash->entries[i];
+		printf("assign successful!\n");
 	}
 
 	for(i = 0; i < old_capacity; i++)
 	{
-		hash->entries[i] = 0;
+		hash->entries[i] = NULL;
+		printf("clear successful!\n");
 	}
 
 	free(hash->entries);
@@ -75,7 +83,7 @@ void table_set(HashTable *hash, KEY_TYPE key, VALUE_TYPE value)
 	double ratio = hash->size / hash->capacity;
 	Node *entry = create_node(key, value);
 	Node *p;
-	if(hash->size >= hash->capacity)
+	if(ratio >= INC_RATIO)
 	{
 		encapacity(hash);
 	}
@@ -92,15 +100,16 @@ void table_set(HashTable *hash, KEY_TYPE key, VALUE_TYPE value)
 		//find tail node 
 		while(p->next)
 		{
-			if(strcmp(p->key,key))
+			if(strcmp(p->key,key) == 0)
 			{
 				p->value = value;
+				free(entry);
 				return;
 			}
 			p = p->next;
 		}
 
-		p = p->next;
+		p->next = entry;
 	}
 	hash->size ++;
 
@@ -122,7 +131,7 @@ VALUE_TYPE table_get(HashTable *hash, KEY_TYPE key)
 
 		while(p)
 		{
-			if(strcmp(p->key,key))
+			if(strcmp(p->key,key) == 0)
 			{
 				return p->value;
 			}
@@ -135,18 +144,38 @@ VALUE_TYPE table_get(HashTable *hash, KEY_TYPE key)
 	return NULL;
 }
 
-/*void table_del (HasTable *hash, KEY_type *key)
+void table_del (HashTable *hash, KEY_TYPE key)
 {
-	int index = hash(key) % table->capacity;
-	Node *p = table->entires[index];
-	if(table->size == 0)
+	int index = Hash(key) % hash->capacity;
+	Node *p = hash->entries[index];
+	Node *q;
+	Node *needRemoved;
+	if(hash->size == 0)
 	{
 		printf("NO content!");
-		exit();
+		exit(1);
+	}
+	else
+	{
+		if(strcmp(p->key, key) != 0 )
+		{
+			while(p)
+			{
+				q = p;
+				p = p->next;
+			}
+
+		}
+		else 
+		{
+			needRemoved = p;
+			p = p->next;
+			q = p;
+			free(needRemoved);
+		}	
 	}
 
-}*/
-
+}
 
 void free_table(HashTable *hash)
 {
